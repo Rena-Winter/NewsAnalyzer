@@ -112,7 +112,7 @@ public class Article {
         this.title = title;
     }
 
-    public Article withTitle(String title) {
+    public Article withTitle (String title) {
         this.title = title;
         return this;
     }

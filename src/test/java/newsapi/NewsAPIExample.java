@@ -1,18 +1,20 @@
 package newsapi;
 
 import newsapi.beans.Article;
+import newsapi.beans.NewsApiException;
 import newsapi.beans.NewsReponse;
 import newsapi.enums.Category;
 import newsapi.enums.Country;
 import newsapi.enums.Endpoint;
 
+import java.io.IOException;
 import java.util.List;
 
 public class NewsAPIExample {
 
-    public static final String APIKEY = "myAPIKey";
+    public static final String APIKEY = "214ade2bcab9482da030e57af2fdb48a";
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException, NewsApiException {
 
         NewsApi newsApi = new NewsApiBuilder()
                 .setApiKey(APIKEY)

@@ -2,6 +2,7 @@ package newsapi;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import newsapi.beans.NewsApiException;
 import newsapi.beans.NewsReponse;
 import newsapi.enums.*;
 
@@ -104,19 +105,16 @@ public class NewsApi {
         this.endpoint = endpoint;
     }
 
-    protected String requestData() {
+    protected String requestData() throws IOException, MalformedURLException, NewsApiException {
         String url = buildURL();
         System.out.println("URL: "+url);
         URL obj = null;
-        try {
+
             obj = new URL(url);
-        } catch (MalformedURLException e) {
-            // TOOO improve ErrorHandling
-            e.printStackTrace();
-        }
+
         HttpURLConnection con;
         StringBuilder response = new StringBuilder();
-        try {
+
             con = (HttpURLConnection) obj.openConnection();
             BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
             String inputLine;
@@ -124,19 +122,25 @@ public class NewsApi {
                 response.append(inputLine);
             }
             in.close();
-        } catch (IOException e) {
-            // TOOO improve ErrorHandling
-            System.out.println("Error "+e.getMessage());
-        }
+
         return response.toString();
     }
 
-    protected String buildURL() {
+    protected String buildURL() throws NewsApiException {
         // TODO ErrorHandling
-        String urlbase = String.format(NEWS_API_URL,getEndpoint().getValue(),getQ(),getApiKey());
-        StringBuilder sb = new StringBuilder(urlbase);
 
-        if(getFrom() != null){
+        if (getQ() == null){
+            throw new NewsApiException("Not all required Parameters. are set. Error.");
+        }
+        if (getApiKey().equals("")){
+            throw new NewsApiException("Not all required Parameters. are set. Error.");
+        }
+
+
+            String urlbase = String.format(NEWS_API_URL, getEndpoint().getValue(), getQ(), getApiKey());
+            StringBuilder sb = new StringBuilder(urlbase);
+
+         if(getFrom() != null){
             sb.append(DELIMITER).append("from=").append(getFrom());
         }
         if(getTo() != null){
@@ -172,20 +176,18 @@ public class NewsApi {
         return sb.toString();
     }
 
-    public NewsReponse getNews() {
+    public NewsReponse getNews() throws IOException, JsonProcessingException, NewsApiException {
         NewsReponse newsReponse = null;
         String jsonResponse = requestData();
         if(jsonResponse != null && !jsonResponse.isEmpty()){
 
             ObjectMapper objectMapper = new ObjectMapper();
-            try {
+
                 newsReponse = objectMapper.readValue(jsonResponse, NewsReponse.class);
                 if(!"ok".equals(newsReponse.getStatus())){
                     System.out.println("Error: "+newsReponse.getStatus());
                 }
-            } catch (JsonProcessingException e) {
-                System.out.println("Error: "+e.getMessage());
-            }
+
         }
         //TODO improve Errorhandling
         return newsReponse;
