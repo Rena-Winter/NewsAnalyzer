@@ -9,16 +9,20 @@ import newsapi.enums.Category;
 import newsapi.enums.Country;
 import newsapi.enums.Endpoint;
 
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 public class Controller {
 
 	public static final String APIKEY = "214ade2bcab9482da030e57af2fdb48a";
 
-	public void process(NewsApi Ctrl) {
+	public void process(NewsApi Ctrl) throws NewsApiException, IOException {
 		System.out.println("Start process");
 
 		//TODO implement Error handling
@@ -27,9 +31,23 @@ public class Controller {
 
 		//TODO implement methods for analysis
 
+		NewsReponse newsReponse = Ctrl.getNews();
+		if(newsReponse != null){
+			List<Article> articles = newsReponse.getArticles();
+			articles.forEach(article -> System.out.println(article.toString()));
 
+			System.out.println("Statistics: ");
+			System.out.println("Number of Articles: ");
+			System.out.print(getCount(articles));
+			System.out.println("Most Articles provided by: ");
+			System.out.println(getAuthorMostArticles(articles));
+			System.out.println("Shortest author name: ");
+			System.out.print(getShortestName(articles));
+			System.out.println("Sorted by Alphabeth: ");
+			System.out.print(getAlphabetical(articles));
+
+		}
 		System.out.println("End process");
-
 	}
 
 
@@ -76,6 +94,17 @@ public class Controller {
 	private long getCount(List<Article> articles){
 		long Count = articles.stream().count();
 		return Count;
+	}
+
+	private Article getAuthorMostArticles( List<Article> data){
+		return data
+				.stream()
+				.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
+				.entrySet()
+				.stream()
+				.max( Map.Entry.comparingByValue ( ) )
+				.orElseThrow(NoSuchElementException::new )
+				.getKey();
 	}
 
 

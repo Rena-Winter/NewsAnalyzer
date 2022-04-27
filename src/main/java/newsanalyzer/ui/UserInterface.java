@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import newsanalyzer.ctrl.Controller;
 import newsapi.NewsApi;
 import newsapi.NewsApiBuilder;
+import newsapi.beans.NewsApiException;
 import newsapi.enums.Category;
 import newsapi.enums.Country;
 import newsapi.enums.Endpoint;
@@ -21,6 +22,7 @@ public class UserInterface
 	private Controller ctrl = new Controller();
 
 
+
 	public void getDataFromCtrl1(){
 		System.out.println("Football");
 
@@ -31,11 +33,15 @@ public class UserInterface
 				.setSourceCountry(Country.at)
 				.setSourceCategory(Category.sports)
 				.createNewsApi();
-
-		ctrl.process(Ctrl1);
+   try {
+	   ctrl.process(Ctrl1);
+   }
+    catch (IOException | NewsApiException e){
+		System.out.println(e.getMessage());
+		}
 	}
 
-	public void getDataFromCtrl2(){
+	public void getDataFromCtrl2() {
 		System.out.println("Corona");
 
 		NewsApi Ctrl2 = new NewsApiBuilder()
@@ -45,8 +51,12 @@ public class UserInterface
 				.setSourceCountry(Country.at)
 				.setSourceCategory(Category.health)
 				.createNewsApi();
-
-		ctrl.process(Ctrl2);
+		try {
+			ctrl.process(Ctrl2);
+		}
+		catch (IOException | NewsApiException e){
+			System.out.println(e.getMessage());
+		}
 	}
 
 	public void getDataFromCtrl3(){
@@ -59,13 +69,15 @@ public class UserInterface
 				.setSourceCountry(Country.at)
 				.setSourceCategory(Category.entertainment)
 				.createNewsApi();
-
-
-		ctrl.process(Ctrl3);
-
+		try {
+			ctrl.process(Ctrl3);
+		}
+		catch (IOException | NewsApiException e){
+			System.out.println(e.getMessage());
+		}
 	}
 	
-	public void getDataForCustomInput() {
+	public void getDataForCustomInput(){
 		System.out.println("Choice");
 
 		Scanner choice1 = new Scanner(System.in);
@@ -81,19 +93,24 @@ public class UserInterface
 				.setSourceCategory(Category.entertainment)
 				.createNewsApi();
 
-		ctrl.process(CtrlCustom);
-		
+		try {
+			ctrl.process(CtrlCustom);
+		}
+		catch (IOException | NewsApiException e){
+			System.out.println(e.getMessage());
+		}
 	}
 
-
-	public void start() {
+	public void start(){
 		Menu<Runnable> menu = new Menu<>("User Interfacx");
 		menu.setTitel("Wählen Sie aus:");
-		menu.insert("a", "Football", this::getDataFromCtrl1);
-		menu.insert("b", "Corona", this::getDataFromCtrl2);
-		menu.insert("c", "Marvel", this::getDataFromCtrl3);
-		menu.insert("d", "Choice User Imput:",this::getDataForCustomInput);
-		menu.insert("q", "Quit", null);
+		    menu.insert("a", "Football", this::getDataFromCtrl1);
+			menu.insert("b", "Corona", this::getDataFromCtrl2);
+			menu.insert("c", "Marvel", this::getDataFromCtrl3);
+			menu.insert("d", "Choice User Imput:", this::getDataForCustomInput);
+			menu.insert("q", "Quit", null);
+
+
 		Runnable choice;
 		while ((choice = menu.exec()) != null) {
 			 choice.run();
