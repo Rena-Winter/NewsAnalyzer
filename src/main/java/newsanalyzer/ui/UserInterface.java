@@ -12,7 +12,11 @@ import newsapi.beans.NewsApiException;
 import newsapi.enums.Category;
 import newsapi.enums.Country;
 import newsapi.enums.Endpoint;
+import newsreader.downloader.ParallelDownloader;
+import newsreader.downloader.SequentialDownloader;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class UserInterface 
@@ -20,7 +24,7 @@ public class UserInterface
 	public static final String APIKEY = "214ade2bcab9482da030e57af2fdb48a";
 
 	private Controller ctrl = new Controller();
-
+	private List<String> urls = new ArrayList<>();
 
 
 	public void getDataFromCtrl1(){
@@ -34,6 +38,7 @@ public class UserInterface
 				.setSourceCategory(Category.sports)
 				.createNewsApi();
    try {
+	   urls.add(saveSearch(Ctrl1));
 	   ctrl.process(Ctrl1);
    }
     catch (IOException | NewsApiException e){
@@ -52,6 +57,7 @@ public class UserInterface
 				.setSourceCategory(Category.health)
 				.createNewsApi();
 		try {
+			urls.add(saveSearch(Ctrl2));
 			ctrl.process(Ctrl2);
 		}
 		catch (IOException | NewsApiException e){
@@ -70,6 +76,7 @@ public class UserInterface
 				.setSourceCategory(Category.entertainment)
 				.createNewsApi();
 		try {
+			urls.add(saveSearch(Ctrl3));
 			ctrl.process(Ctrl3);
 		}
 		catch (IOException | NewsApiException e){
@@ -94,6 +101,7 @@ public class UserInterface
 				.createNewsApi();
 
 		try {
+			urls.add(saveSearch(CtrlCustom));
 			ctrl.process(CtrlCustom);
 		}
 		catch (IOException | NewsApiException e){
@@ -107,7 +115,8 @@ public class UserInterface
 		    menu.insert("a", "Football", this::getDataFromCtrl1);
 			menu.insert("b", "Corona", this::getDataFromCtrl2);
 			menu.insert("c", "Marvel", this::getDataFromCtrl3);
-			menu.insert("d", "Choice User Imput:", this::getDataForCustomInput);
+			menu.insert("d", "Choice User Input:", this::getDataForCustomInput);
+		    menu.insert("e", "Choice Download last searches",this::downloadLastSearch );
 			menu.insert("q", "Quit", null);
 
 
@@ -150,4 +159,16 @@ public class UserInterface
 		}
 		return number;
 	}
+
+	public void downloadLastSearch(){
+		SequentialDownloader sd = new SequentialDownloader();
+		ParallelDownloader pd = new ParallelDownloader();
+		sd.process(urls);
+	}
+
+	public String saveSearch(NewsApi newsApi){
+		return newsApi.toString();
+	}
 }
+
+

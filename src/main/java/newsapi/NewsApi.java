@@ -192,5 +192,15 @@ public class NewsApi {
         //TODO improve Errorhandling
         return newsReponse;
     }
+
+    @Override
+    public String toString() {
+        try{
+            return this.buildURL();
+        }catch (NewsApiException e) {
+            return "Error: "+ e.getMessage();
+        }
+    }
+
 }
 
